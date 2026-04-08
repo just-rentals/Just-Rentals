@@ -1,134 +1,246 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Just Rentals</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Just Rentals - Luxury Properties</title>
 
+<!-- Supabase JS -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
 
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+
 <style>
-body {font-family:Arial;margin:0;background:#f5f7fa;}
-header {background:#1e3a8a;color:white;text-align:center;padding:20px;}
-.container {padding:20px;}
-.card {background:white;padding:10px;margin:10px 0;border-radius:10px;}
-img {width:100%;border-radius:10px;}
-.btn {background:#1e3a8a;color:white;padding:10px;border:none;margin-top:5px;cursor:pointer;}
-input {width:100%;padding:10px;margin:5px 0;}
+body {
+    margin: 0;
+    font-family: 'Roboto', sans-serif;
+    background: #f8f9fa;
+    color: #333;
+}
+header {
+    background: #1e3a8a;
+    color: white;
+    text-align: center;
+    padding: 40px 20px;
+    font-family: 'Playfair Display', serif;
+}
+header h1 {
+    font-size: 3em;
+    margin: 0;
+}
+header p {
+    font-size: 1.2em;
+    margin-top: 10px;
+    letter-spacing: 1px;
+}
+nav {
+    background: #0f172a;
+    padding: 15px;
+    text-align: center;
+}
+nav a {
+    color: white;
+    margin: 0 20px;
+    text-decoration: none;
+    font-weight: 600;
+    transition: 0.3s;
+}
+nav a:hover {
+    color: #fbbf24;
+}
+.container {
+    max-width: 1200px;
+    margin: auto;
+    padding: 40px 20px;
+}
+.card {
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+    overflow: hidden;
+    margin-bottom: 30px;
+    transition: transform 0.3s;
+}
+.card:hover {
+    transform: translateY(-5px);
+}
+.card img {
+    width: 100%;
+    height: 250px;
+    object-fit: cover;
+}
+.card-content {
+    padding: 20px;
+}
+.card-content h3 {
+    margin: 0;
+    font-family: 'Playfair Display', serif;
+}
+.card-content p {
+    margin: 5px 0;
+}
+.btn {
+    background: #1e3a8a;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    cursor: pointer;
+    border-radius: 8px;
+    margin-top: 10px;
+    transition: 0.3s;
+}
+.btn:hover {
+    background: #fbbf24;
+    color: #0f172a;
+}
+form input, form textarea {
+    width: 100%;
+    padding: 12px;
+    margin: 8px 0;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    box-sizing: border-box;
+}
+#list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 30px;
+}
+footer {
+    background: #0f172a;
+    color: white;
+    text-align: center;
+    padding: 30px 20px;
+}
+#whatsapp-button {
+    position: fixed;
+    bottom: 25px;
+    right: 25px;
+    background-color: #25D366;
+    color: white;
+    padding: 15px 20px;
+    border-radius: 50px;
+    font-size: 16px;
+    text-decoration: none;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    z-index: 1000;
+    transition: transform 0.2s;
+}
+#whatsapp-button:hover {
+    transform: scale(1.1);
+}
 </style>
 </head>
-
 <body>
 
 <header>
-<h1>Just Rentals</h1>
-<p>Your Space, Our Responsibility</p>
+    <h1>Just Rentals</h1>
+    <p>Your Space, Our Responsibility</p>
 </header>
+
+<nav>
+    <a href="#listings">Listings</a>
+    <a href="#contact">Contact</a>
+</nav>
 
 <div class="container">
 
 <!-- ADMIN LOGIN -->
-<h3>Admin Login</h3>
-<input id="email" placeholder="Email">
-<input id="password" type="password" placeholder="Password">
+<h2>Admin Login</h2>
+<input id="email" placeholder="Email" type="email">
+<input id="password" placeholder="Password" type="password">
 <button class="btn" onclick="login()">Login</button>
 
 <!-- ADMIN PANEL -->
-<div id="adminPanel" style="display:none;">
-<h3>Add Property</h3>
-
-<input id="title" placeholder="Title">
-<input id="price" placeholder="Price">
-<input id="type" placeholder="Type">
-<input type="file" id="images" multiple>
-
-<button class="btn" onclick="addProperty()">Add Listing</button>
+<div id="adminPanel" style="display:none; margin-top:30px;">
+    <h2>Add New Property</h2>
+    <input id="title" placeholder="Title">
+    <input id="price" placeholder="Price">
+    <input id="type" placeholder="Type (Apartment, Villa, etc.)">
+    <input type="file" id="images" multiple>
+    <button class="btn" onclick="addProperty()">Add Listing</button>
 </div>
 
 <!-- LISTINGS -->
-<h2>Listings</h2>
+<h2 id="listings" style="margin-top:50px;">Available Properties</h2>
 <div id="list"></div>
 
 </div>
 
+<!-- WhatsApp Button -->
+<a href="https://wa.me/919606247919" target="_blank" id="whatsapp-button">💬 Chat with us</a>
+
+<footer>
+    <p>© 2026 Just Rentals | All Rights Reserved</p>
+</footer>
+
 <script>
-// 🔴 PASTE YOUR DETAILS HERE
+// 🔴 REPLACE WITH YOUR SUPABASE KEYS
 const supabase = supabase.createClient(
-  "https://evpwzyyvsruakrsyoxii.supabase.co",
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV2cHd6eXl2c3J1YWtyc3lveGlpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU2NTUzMTYsImV4cCI6MjA5MTIzMTMxNn0.iY5VuzpAMlfBakaasEgZtPfSm2VT_289C6s2RFAjglQ"
+    "https://evpwzyyvsruakrsyoxii.supabase.co",  // Project URL
+    "YOUR_ANON_KEY"                               // Anon / publishable key
 );
 
 // LOGIN
 async function login(){
-  const { data, error } = await supabase.auth.signInWithPassword({
-    email: email.value,
-    password: password.value
-  });
-
-  if(error){ alert("Login failed"); return; }
-
-  document.getElementById("adminPanel").style.display="block";
+    const { data, error } = await supabase.auth.signInWithPassword({
+        email: email.value,
+        password: password.value
+    });
+    if(error){ alert("Login failed: " + error.message); return; }
+    document.getElementById("adminPanel").style.display = "block";
 }
 
 // ADD PROPERTY
 async function addProperty(){
-  let files = document.getElementById("images").files;
-  let urls = [];
-
-  for(let file of files){
-    let fileName = Date.now() + file.name;
-
-    await supabase.storage
-      .from("property-images")
-      .upload(fileName, file);
-
-    let { data } = supabase.storage
-      .from("property-images")
-      .getPublicUrl(fileName);
-
-    urls.push(data.publicUrl);
-  }
-
-  await supabase.from("properties").insert([{
-    title: title.value,
-    price: price.value,
-    type: type.value,
-    images: urls.join(","),
-    rating: 0
-  }]);
-
-  alert("Added!");
-  loadProperties();
+    const files = document.getElementById("images").files;
+    const urls = [];
+    for(const file of files){
+        const fileName = Date.now() + file.name;
+        await supabase.storage.from("property-images").upload(fileName, file);
+        const { data } = supabase.storage.from("property-images").getPublicUrl(fileName);
+        urls.push(data.publicUrl);
+    }
+    await supabase.from("properties").insert([{
+        title: title.value,
+        price: price.value,
+        type: type.value,
+        images: urls.join(","),
+        rating: 0
+    }]);
+    alert("Property added!");
+    loadProperties();
 }
 
-// LOAD PROPERTIES
+// LOAD LISTINGS
 async function loadProperties(){
-  let { data } = await supabase.from("properties").select("*");
-
-  let html = "";
-  data.forEach(p => {
-    let img = p.images.split(",")[0];
-
-    html += `
-    <div class="card">
-      <img src="${img}">
-      <h3>${p.title}</h3>
-      <p>${p.price}</p>
-      <p>${p.type}</p>
-      <button class="btn" onclick="rate(${p.id})">⭐ Rate</button>
-      <button class="btn" onclick="window.open('https://wa.me/919606247919')">Enquire</button>
-    </div>`;
-  });
-
-  document.getElementById("list").innerHTML = html;
+    const { data } = await supabase.from("properties").select("*");
+    let html = "";
+    data.forEach(p => {
+        const img = p.images.split(",")[0];
+        html += `
+        <div class="card">
+            <img src="${img}">
+            <div class="card-content">
+                <h3>${p.title}</h3>
+                <p>Price: ${p.price}</p>
+                <p>Type: ${p.type}</p>
+                <p>Rating: ${p.rating} ⭐</p>
+                <button class="btn" onclick="rate(${p.id})">Rate</button>
+                <button class="btn" onclick="window.open('https://wa.me/919606247919')">Enquire</button>
+            </div>
+        </div>`;
+    });
+    document.getElementById("list").innerHTML = html;
 }
 
-// RATE
+// RATE PROPERTY
 async function rate(id){
-  let val = prompt("Rate 1-5");
-  if(!val) return;
-
-  await supabase.from("properties").update({rating: val}).eq("id", id);
-  loadProperties();
+    const val = prompt("Rate 1-5");
+    if(!val) return;
+    await supabase.from("properties").update({rating: val}).eq("id", id);
+    loadProperties();
 }
 
 // LOAD ON START
