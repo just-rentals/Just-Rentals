@@ -6,7 +6,7 @@
 <title>Just Rentals - Luxury Properties</title>
 
 <!-- Supabase JS -->
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+<script src="https://unpkg.com/@supabase/supabase-js@2"></script>
 
 <!-- Google Fonts -->
 <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
@@ -177,14 +177,15 @@ footer {
 
 <script>
 // 🔴 REPLACE WITH YOUR SUPABASE KEYS
-const supabase = supabase.createClient(
-    "https://evpwzyyvsruakrsyoxii.supabase.co",  // Project URL
-    "sb_publishable_u-8Rqa9VG9ZmwOuwLfkK2w_ULtHLmvJ" // Anon / publishable key
+    const { createClient } = supabase;
+    const supabase = supabase.createClient(
+        "https://evpwzyyvsruakrsyoxii.supabase.co",  // Project URL
+        "sb_publishable_u-8Rqa9VG9ZmwOuwLfkK2w_ULtHLmvJ" // Anon / publishable key
 );
 
 // LOGIN
 async function login(){
-    const { data, error } = await supabase.auth.signInWithPassword({
+    const { data, error } = await supabaseClient.auth.signInWithPassword({
         email: email.value,
         password: password.value
     });
@@ -198,11 +199,11 @@ async function addProperty(){
     const urls = [];
     for(const file of files){
         const fileName = Date.now() + file.name;
-        await supabase.storage.from("property-images").upload(fileName, file);
-        const { data } = supabase.storage.from("property-images").getPublicUrl(fileName);
+        await supabaseClient.storage.from("property-images").upload(fileName, file);
+        const { data } = supabaseClient.storage.from("property-images").getPublicUrl(fileName);
         urls.push(data.publicUrl);
     }
-    await supabase.from("properties").insert([{
+    await supabaseClient.from("properties").insert([{
         title: title.value,
         price: price.value,
         type: type.value,
@@ -215,7 +216,7 @@ async function addProperty(){
 
 // LOAD LISTINGS
 async function loadProperties(){
-    const { data } = await supabase.from("properties").select("*");
+    const { data } = await supabaseClient.from("properties").select("*");
     let html = "";
     data.forEach(p => {
         const img = p.images.split(",")[0];
@@ -239,7 +240,7 @@ async function loadProperties(){
 async function rate(id){
     const val = prompt("Rate 1-5");
     if(!val) return;
-    await supabase.from("properties").update({rating: val}).eq("id", id);
+    await supabaseClient.from("properties").update({rating: val}).eq("id", id);
     loadProperties();
 }
 
