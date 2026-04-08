@@ -176,20 +176,26 @@ footer {
 </footer>
 
 <script>
-// 🔴 REPLACE WITH YOUR SUPABASE KEYS
-    const { createClient } = supabase;
-    const supabase = supabase.createClient(
-        "https://evpwzyyvsruakrsyoxii.supabase.co",  // Project URL
-        "sb_publishable_u-8Rqa9VG9ZmwOuwLfkK2w_ULtHLmvJ" // Anon / publishable key
+// ✅ Initialize Supabase properly
+const { createClient } = supabase;
+const supabaseClient = createClient(
+    "https://evpwzyyvsruakrsyoxii.supabase.co",
+    "sb_publishable_u-8Rqa9VG9ZmwOuwLfkK2w_ULtHLmvJ"
 );
 
-// LOGIN
+// LOGIN FUNCTION
 async function login(){
     const { data, error } = await supabaseClient.auth.signInWithPassword({
-        email: email.value,
-        password: password.value
+        email: document.getElementById("email").value,
+        password: document.getElementById("password").value
     });
-    if(error){ alert("Login failed: " + error.message); return; }
+
+    if(error){
+        alert("Login failed: " + error.message);
+        return;
+    }
+
+    alert("Login successful!");
     document.getElementById("adminPanel").style.display = "block";
 }
 
